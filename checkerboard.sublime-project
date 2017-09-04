@@ -1,0 +1,42 @@
+{
+	"folders":
+[
+{
+    "file_exclude_patterns":     ["CMakeCache.txt","Makefile","cmake_install.cmake"],
+    "folder_exclude_patterns":   ["CMakeFiles"],
+
+	"path": "./",
+	"name": "checkerboard",
+},
+],
+"settings":
+{
+	"sublimegdb_workingdir": "${folder:${project_path:${file_base_name}}}",
+	"sublimegdb_arguments": "",
+	"sublimegdb_commandline": "gdb --interpreter=mi ./${file_base_name}"
+
+
+},
+"build_systems":
+[
+	{
+		"name": "checkerboard",
+    	"cmd": ["cd ../ && cmake . && make"],
+    	"shell": true,
+
+	    "variants":
+    	[
+    		 {
+       			"name": "Build & Run",
+    			"cmd": ["cd ../ && cmake . && make && './checkerboard'"],  
+    			"shell": true,
+    		},
+    		{
+       			"name": "Run",
+    			"cmd": ["'../checkerboard'"],    
+    			"shell": true,
+    		}
+    	]
+	}
+]
+}
