@@ -30,7 +30,7 @@ int main() {
 	vector<Point2f> output2D;
 	vector<Point3f> output3D;
 	readLidarProjectedImage(zed,drv,output2D, output3D,1);
-
+*/
 
 	sl::Mat image(zed.getResolution(), MAT_TYPE_8U_C4);
 	sl::Mat imageColor(zed.getResolution(), MAT_TYPE_8U_C4);
@@ -47,7 +47,8 @@ int main() {
 	cv::Mat image_ocv 			= slMat2cvMat(image);
 	cv::Mat image_depth_ocv 	= slMat2cvMat(image_depth);
 	cv::Mat imageColor_ocv 		= slMat2cvMat(imageColor);
-		
+	
+	/*	
 	for (int i = 0; i < output2D.size(); i++)
 	{
 		if(output2D[i].x < 0 || output2D[i].x > zed.getResolution().width || output2D[i].y < 0 || output2D[i].y > zed.getResolution().height)
@@ -64,20 +65,35 @@ int main() {
 	}
 	cv::imshow("VIEW", imageColor_ocv);
  	cv::waitKey(0);
-	
-	
-	/*Size patternsize(6, 9); 			//interior number of corners
-	cv::Mat planeParams(4,1,CV_32F);
-	vector<Point2f> p_corners;
-	vector<Point3f> p_corners3D;
-	getCheckerboardPlane(zed,patternsize,planeParams,p_corners3D,p_corners,true);
-	
-
-
-	drv->stopMotor(); 
-	RPlidarDriver::DisposeDriver(drv);
-
 	*/
+	
+	Size patternsize(6, 9); 			//interior number of corners
+	//cv::Mat planeParams(4,1,CV_32F);
+	vector<Point2f> p_corners;
+	//vector<Point3f> p_corners3D;
+	//vector<Point2f> p_corners;
+
+	bool patternfound = findChessboardCorners(image_ocv, patternsize, p_corners);
+
+	if (patternfound)
+	{
+		cornerSubPix(image_ocv, p_corners, Size(11, 11), Size(-1, -1), TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+		printf("Checkerboard:\t\t\t gefunden\n");
+		printf("Gefundene Ecken:\t\t %lu von %i\n", p_corners.size(),patternsize.width*patternsize.height);
+		drawChessboardCorners(image_ocv, patternsize, cv::Mat(p_corners), patternfound);
+		cv::imshow("view",image_ocv);
+		cv::waitKey(0);
+	}
+
+
+	//getCheckerboardPlane(zed,patternsize,planeParams,p_corners3D,p_corners,true);
+	
+
+
+	//drv->stopMotor(); 
+	//RPlidarDriver::DisposeDriver(drv);
+
+	
 	zed.close();
 
 	return 0;
